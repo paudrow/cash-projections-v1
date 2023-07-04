@@ -1,7 +1,7 @@
 TODO
 ====
 
-- [ ] Add CI
+- [x] Add CI
 - [x] Add tests
 - [ ] Add items to the CSV from the CLI
 - [ ] Show expenses for each category for each month
