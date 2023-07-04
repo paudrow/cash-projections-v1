@@ -1,0 +1,6 @@
+name,usd,frequency,type_,is_taxable
+Salary,123456,year,income,true
+Mortgage,1234,month,bill,false
+Auto loan,123,month,bill,false
+Staying bonus,123456,once(2024-01-01),income,true
+Yearly bonus,12345,once(2023-12-01),income,true
