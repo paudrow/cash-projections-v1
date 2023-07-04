@@ -1,0 +1,10 @@
+TODO
+====
+
+- [ ] Add CI
+- [ ] Add items to the CSV from the CLI
+- [ ] Show expenses for each category for each month
+- [ ] Show expenses involved in each month
+- [ ] Output a projection CSV with more data
+- [ ] Migrate to use a local database, like SQLite
+- [ ] Break up the main file into separate files
