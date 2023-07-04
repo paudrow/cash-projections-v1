@@ -10,8 +10,6 @@ use csv;
 
 use serde::{Deserialize, Deserializer};
 
-const TAX_RATE: f64 = 0.169;
-
 enum Frequency {
     OneTime(Option<NaiveDate>),
     Daily,
@@ -117,7 +115,7 @@ struct CashEvent {
 }
 
 impl CashEvent {
-    fn new(
+    fn _new(
         name: String,
         usd: f64,
         frequency: Frequency,
@@ -133,9 +131,9 @@ impl CashEvent {
         }
     }
 
-    fn get_monthly_amount(&self, date: &NaiveDate) -> f64 {
+    fn get_monthly_amount(&self, date: &NaiveDate, tax_rate: f64) -> f64 {
         let amount = if self.is_taxable {
-            self.usd * (1.0 - TAX_RATE)
+            self.usd * (1.0 - tax_rate)
         } else {
             self.usd
         };
@@ -165,10 +163,10 @@ impl CashEvent {
     }
 }
 
-fn get_monthly_amount(cash_events: &Vec<CashEvent>, date: &NaiveDate) -> f64 {
+fn get_monthly_amount(cash_events: &Vec<CashEvent>, date: &NaiveDate, tax_rate: f64) -> f64 {
     cash_events
         .iter()
-        .map(|cash_event| cash_event.get_monthly_amount(date))
+        .map(|cash_event| cash_event.get_monthly_amount(date, tax_rate))
         .sum()
 }
 
@@ -197,6 +195,9 @@ struct Args {
 
     #[arg(short, long, default_value = "12")]
     months: u32,
+
+    #[arg(short, long, default_value = "0.169")]
+    tax_rate: f64,
 }
 
 fn main() {
@@ -222,7 +223,7 @@ fn main() {
 
     let mut sum = 0.0;
     for date in dates {
-        let monthly_amount = get_monthly_amount(&events, &date);
+        let monthly_amount = get_monthly_amount(&events, &date, args.tax_rate);
         sum += monthly_amount;
         println!(
             "{}:\t{:10.2}\t==>\t{sum:10.2}",
