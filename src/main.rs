@@ -171,9 +171,12 @@ fn get_monthly_amount(cash_events: &Vec<CashEvent>, date: &NaiveDate, tax_rate: 
 }
 
 fn get_first_day_of_months_between(start_date: &NaiveDate, end_date: &NaiveDate) -> Vec<NaiveDate> {
+    if start_date > end_date {
+        return vec![];
+    }
     let mut dates = vec![];
     let mut date = start_date.clone().with_day(1).expect("Invalid date");
-    while date < *end_date {
+    while date <= *end_date {
         if date.day() == 1 {
             dates.push(date);
         }
@@ -182,6 +185,61 @@ fn get_first_day_of_months_between(start_date: &NaiveDate, end_date: &NaiveDate)
             .expect("Invalid date");
     }
     dates
+}
+
+#[cfg(test)]
+mod get_first_day_of_months_between {
+
+    #[test]
+    fn first_day_to_first_day() {
+        use super::get_first_day_of_months_between;
+        use chrono::NaiveDate;
+
+        let start_date = NaiveDate::from_ymd_opt(2020, 1, 1).unwrap();
+        let end_date = NaiveDate::from_ymd_opt(2020, 3, 1).unwrap();
+        let dates = get_first_day_of_months_between(&start_date, &end_date);
+        assert_eq!(dates.len(), 3);
+        assert_eq!(dates[0], NaiveDate::from_ymd_opt(2020, 1, 1).unwrap());
+        assert_eq!(dates[1], NaiveDate::from_ymd_opt(2020, 2, 1).unwrap());
+        assert_eq!(dates[2], NaiveDate::from_ymd_opt(2020, 3, 1).unwrap());
+    }
+
+    #[test]
+    fn middle_to_middle() {
+        use super::get_first_day_of_months_between;
+        use chrono::NaiveDate;
+
+        let start_date = NaiveDate::from_ymd_opt(2020, 1, 20).unwrap();
+        let end_date = NaiveDate::from_ymd_opt(2020, 3, 20).unwrap();
+        let dates = get_first_day_of_months_between(&start_date, &end_date);
+        assert_eq!(dates.len(), 3);
+        assert_eq!(dates[0], NaiveDate::from_ymd_opt(2020, 1, 1).unwrap());
+        assert_eq!(dates[1], NaiveDate::from_ymd_opt(2020, 2, 1).unwrap());
+        assert_eq!(dates[2], NaiveDate::from_ymd_opt(2020, 3, 1).unwrap());
+    }
+
+    #[test]
+    fn start_and_end_in_same_month() {
+        use super::get_first_day_of_months_between;
+        use chrono::NaiveDate;
+
+        let start_date = NaiveDate::from_ymd_opt(2020, 1, 20).unwrap();
+        let end_date = NaiveDate::from_ymd_opt(2020, 1, 25).unwrap();
+        let dates = get_first_day_of_months_between(&start_date, &end_date);
+        assert_eq!(dates.len(), 1);
+        assert_eq!(dates[0], NaiveDate::from_ymd_opt(2020, 1, 1).unwrap());
+    }
+
+    #[test]
+    fn return_empty_if_start_after_end() {
+        use super::get_first_day_of_months_between;
+        use chrono::NaiveDate;
+
+        let start_date = NaiveDate::from_ymd_opt(2020, 1, 20).unwrap();
+        let end_date = NaiveDate::from_ymd_opt(2020, 1, 15).unwrap();
+        let dates = get_first_day_of_months_between(&start_date, &end_date);
+        assert_eq!(dates.len(), 0);
+    }
 }
 
 #[derive(Parser)]
